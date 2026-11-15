@@ -18,7 +18,7 @@ gh api --method PUT "/repos/$repository/branches/main/protection" --input - <<'J
 {
   "required_status_checks": {
     "strict": true,
-    "contexts": ["Security gates / verify"]
+    "contexts": ["verify"]
   },
   "enforce_admins": true,
   "required_pull_request_reviews": {

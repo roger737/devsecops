@@ -36,7 +36,22 @@ jobs:
       - name: Check suppression ownership and expiry
         run: python scripts/check_exception_expiry.py security juice-shop
       - name: Test custom rules
-        run: semgrep scan --test --config security/semgrep/rules.yml security/semgrep/tests
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          result = subprocess.run(
+              ['semgrep', 'scan', '--test', '--config', 'security/semgrep/rules.yml', 'security/semgrep/tests'],
+              stdout=subprocess.PIPE,
+              stderr=subprocess.STDOUT,
+              text=True,
+          )
+          print(result.stdout)
+          if result.returncode:
+              details = result.stdout[-6000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print(f'::error title=Custom rule tests failed::{details}')
+              raise SystemExit(result.returncode)
+          PY
       - name: Verify documented false-positive suppression
         run: semgrep scan --config security/semgrep/rules.yml --metrics=off --error security/semgrep/examples/false-positive.ts
       - name: Scan Juice Shop
@@ -116,7 +131,17 @@ jobs:
         run: python scripts/redact_gitleaks.py security-reports/gitleaks.json
       - name: Summarize secret findings
         if: always() && hashFiles('security-reports/gitleaks.json') != ''
-        run: python scripts/gitleaks_summary.py security-reports/gitleaks.json | tee -a "$GITHUB_STEP_SUMMARY"
+        run: |
+          python scripts/gitleaks_summary.py security-reports/gitleaks.json | tee -a "$GITHUB_STEP_SUMMARY"
+          python - <<'PY'
+          import json
+
+          with open('security-reports/gitleaks.json', encoding='utf-8') as report:
+              findings = json.load(report)
+          if findings:
+              locations = ', '.join(f"{item['File']}:{item['StartLine']}" for item in findings[:5])
+              print(f'::error title=Additional secret findings::{len(findings)} finding(s): {locations}')
+          PY
       - name: Upload redacted secret report
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
