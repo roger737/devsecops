@@ -36,7 +36,7 @@ jobs:
       - name: Check suppression ownership and expiry
         run: python scripts/check_exception_expiry.py security juice-shop
       - name: Test custom rules
-        run: semgrep scan --test --config security/semgrep/rules.yml security/semgrep/tests
+        run: python scripts/test_semgrep_rules.py
       - name: Verify documented false-positive suppression
         run: semgrep scan --config security/semgrep/rules.yml --metrics=off --error security/semgrep/examples/false-positive.ts
       - name: Scan Juice Shop
@@ -106,7 +106,6 @@ jobs:
             docker.io/zricethezav/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f \
             dir . \
             --config .gitleaks.toml \
-            --baseline-path security/gitleaks-baseline.json \
             --report-format json \
             --report-path security-reports/gitleaks.json \
             --redact \
@@ -116,7 +115,17 @@ jobs:
         run: python scripts/redact_gitleaks.py security-reports/gitleaks.json
       - name: Summarize secret findings
         if: always() && hashFiles('security-reports/gitleaks.json') != ''
-        run: python scripts/gitleaks_summary.py security-reports/gitleaks.json | tee -a "$GITHUB_STEP_SUMMARY"
+        run: |
+          python scripts/gitleaks_summary.py security-reports/gitleaks.json | tee -a "$GITHUB_STEP_SUMMARY"
+          python - <<'PY'
+          import json
+
+          with open('security-reports/gitleaks.json', encoding='utf-8') as report:
+              findings = json.load(report)
+          if findings:
+              locations = ', '.join(f"{item['File']}:{item['StartLine']}" for item in findings[:5])
+              print(f'::error title=Additional secret findings::{len(findings)} finding(s): {locations}')
+          PY
       - name: Upload redacted secret report
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -181,6 +190,7 @@ jobs:
             cat security-reports/trivy-dependencies.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          python scripts/trivy_summary.py security-reports/trivy-dependencies.json --label 'Dependency vulnerabilities' | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Create dependency SARIF report
         if: always()
         run: trivy fs --scanners vuln --severity HIGH,CRITICAL --format sarif --output security-reports/trivy-dependencies.sarif --exit-code 0 juice-shop
@@ -278,6 +288,7 @@ jobs:
             cat security-reports/trivy-image.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          python scripts/trivy_summary.py security-reports/trivy-image.json --label 'Image vulnerabilities' | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Create image SARIF report
         if: always()
         run: trivy image --scanners vuln --pkg-types os,library --severity HIGH,CRITICAL --format sarif --output security-reports/trivy-image.sarif --exit-code 0 "juice-shop:hardened-$GITHUB_SHA"

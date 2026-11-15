@@ -72,11 +72,11 @@ With Python 3.12 available:
 
 ```bash
 python -m pip install --requirement security/requirements.txt
-semgrep scan --test --config security/semgrep/rules.yml security/semgrep/tests
+python scripts/test_semgrep_rules.py
 semgrep scan --config security/semgrep/rules.yml --metrics=off --error security/semgrep/examples/false-positive.ts
 ```
 
-The tests include vulnerable and safe parameterized/restricted-origin cases. `security/exceptions.md` explains suppression, ownership, approval, and expiry. `.gitleaks.toml` narrowly exempts only the known upstream private-key training fixtures. `security/gitleaks-baseline.json` records 72 redacted, exact-fingerprint findings in the intentionally vulnerable training target; the current-tree gate fails on any additional secret. Regenerate and review that baseline only through the documented risk-acceptance process, never to hide a new leak.
+The test helper pairs each fixture with a same-named copy of the rule file under the ignored `security-reports/` directory, avoiding a Semgrep 1.185.0 test-runner path bug without duplicating source rules. The fixtures include vulnerable and safe parameterized/restricted-origin cases. `security/exceptions.md` explains suppression, ownership, approval, and expiry. `.gitleaks.toml` narrowly exempts only the known upstream private-key training fixtures. `.gitleaksignore` records 72 exact `file:rule:line` fingerprints in the intentionally vulnerable training target; the current-tree gate fails on any additional secret. Change that reviewed fixture inventory only through the documented risk-acceptance process, never to hide a new leak.
 
 Run the supporting checks before publishing changes:
 

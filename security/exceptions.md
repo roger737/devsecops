@@ -12,6 +12,8 @@ Example: `security/semgrep/examples/false-positive.ts` uses a fixed deployment c
 
 For secrets, `.gitleaks.toml` extends the complete default ruleset. It suppresses only the `private-key` rule for three exact Juice Shop paths where upstream intentionally embeds the same public training key; other rules and all other paths remain active. This is a known-fixture allowlist, not approval to commit operational credentials.
 
+`.gitleaksignore` additionally records 72 findings deliberately distributed in the unchanged Juice Shop training target. It contains only exact `file:rule:line` fingerprints, not values or directory exclusions. The current-tree scan ignores only these reviewed entries, so new, moved, or differently classified findings remain visible. Gitleaks' JSON baseline comparison also includes platform-sensitive columns and entropy; exact fingerprints avoid that portability problem. Refreshing the inventory requires independent review and a report diff; this fixture inventory is not a production risk exception.
+
 ## Risk exceptions
 
 Record the vulnerable component or rule, affected service and environment, business justification, compensating controls, accountable owner, approver, and expiry. High/Critical exceptions require Engineering Manager and security approval; expiry is at most 30 days for Critical and 90 days for High. The service owner escalates to the Engineering Manager before expiry if remediation will miss the date.

@@ -22,6 +22,9 @@ def main() -> None:
         for item in results[:20]:
             path = item['path'].replace('|', '\\|')
             print(f"| `{item['check_id']}` | `{path}` | {item['start']['line']} |")
+        locations = ', '.join(f"{item['path']}:{item['start']['line']}" for item in results[:10])
+        locations = locations.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+        print(f'::error title=High-severity static analysis::{len(results)} finding(s): {locations}')
 
     if args.require_juice_shop_findings:
         expected = {
