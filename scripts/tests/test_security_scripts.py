@@ -75,6 +75,30 @@ class SecurityScriptTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'requires'):
                 check_file(source, dt.date(2026, 11, 15))
 
+    def test_trivy_summary_counts_and_redacts_layout(self):
+        from scripts.trivy_summary import main as trivy_summary
+
+        report_data = {
+            'Results': [{
+                'Vulnerabilities': [{
+                    'VulnerabilityID': 'CVE-0000-0001',
+                    'Severity': 'CRITICAL',
+                    'PkgName': 'synthetic-package',
+                    'InstalledVersion': '1.0.0',
+                    'FixedVersion': '1.0.1',
+                }],
+            }],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            report = Path(directory) / 'trivy.json'
+            report.write_text(json.dumps(report_data), encoding='utf-8')
+            output = io.StringIO()
+            with patch('sys.argv', ['trivy_summary.py', str(report), '--label', 'Synthetic scan']), redirect_stdout(output):
+                trivy_summary()
+            self.assertIn('1 High/Critical finding', output.getvalue())
+            self.assertIn('CVE-0000-0001', output.getvalue())
+            self.assertIn('synthetic-package', output.getvalue())
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -190,6 +190,7 @@ jobs:
             cat security-reports/trivy-dependencies.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          python scripts/trivy_summary.py security-reports/trivy-dependencies.json --label 'Dependency vulnerabilities' | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Create dependency SARIF report
         if: always()
         run: trivy fs --scanners vuln --severity HIGH,CRITICAL --format sarif --output security-reports/trivy-dependencies.sarif --exit-code 0 juice-shop
@@ -287,6 +288,7 @@ jobs:
             cat security-reports/trivy-image.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          python scripts/trivy_summary.py security-reports/trivy-image.json --label 'Image vulnerabilities' | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Create image SARIF report
         if: always()
         run: trivy image --scanners vuln --pkg-types os,library --severity HIGH,CRITICAL --format sarif --output security-reports/trivy-image.sarif --exit-code 0 "juice-shop:hardened-$GITHUB_SHA"
