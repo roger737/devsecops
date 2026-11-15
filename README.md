@@ -76,7 +76,7 @@ semgrep scan --test --config security/semgrep/rules.yml security/semgrep/tests
 semgrep scan --config security/semgrep/rules.yml --metrics=off --error security/semgrep/examples/false-positive.ts
 ```
 
-The tests include vulnerable and safe parameterized/restricted-origin cases. `security/exceptions.md` explains suppression, ownership, approval, and expiry. `.gitleaks.toml` narrowly exempts only the known upstream private-key training fixtures; every other rule and path remains active.
+The tests include vulnerable and safe parameterized/restricted-origin cases. `security/exceptions.md` explains suppression, ownership, approval, and expiry. `.gitleaks.toml` narrowly exempts only the known upstream private-key training fixtures. `security/gitleaks-baseline.json` records 72 redacted, exact-fingerprint findings in the intentionally vulnerable training target; the current-tree gate fails on any additional secret. Regenerate and review that baseline only through the documented risk-acceptance process, never to hide a new leak.
 
 Run the supporting checks before publishing changes:
 

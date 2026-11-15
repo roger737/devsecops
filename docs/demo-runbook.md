@@ -27,8 +27,8 @@ Follow `presentation/speaker-notes.md`. The three live blocks total 12 minutes; 
 Perform this before the interview and retain both run URLs. The live interview should replay the evidence rather than wait for runners.
 
 1. Create `demo/secret-leak` from the unprotected starting branch and add `security/demo/fake-credentials.txt` containing a clearly fake AWS access-key pattern and fake secret. Do not use an actual key or a key generated for an AWS account.
-2. Push the branch and open a pull request. Show the red **Secret detection** job, the redacted finding location, and the blocked aggregate check.
-3. Remove the file and push the branch again. Show that the current-tree secret gate no longer reports the demonstration file while other intentional Juice Shop gates may remain red.
+2. Push the branch and open a pull request. Show the red **Secret detection** job, the redacted finding location, and the blocked aggregate check. The 72 upstream training findings are exact-fingerprint baseline entries, not a broad path exclusion; the synthetic addition must still fail.
+3. Remove the file and push the branch again. Show that the current-tree secret gate returns to zero additional findings while other intentional Juice Shop gates remain red.
 4. Explain that for a real credential the next action is immediate revoke/rotate and incident response. The weekly **Secret history audit** checks old commits; deleting the latest file is insufficient.
 
 **Message:** preventive detection is immediate, but remediation is rotation and containment, not cosmetic deletion.
