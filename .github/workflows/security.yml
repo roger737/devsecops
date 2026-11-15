@@ -36,22 +36,7 @@ jobs:
       - name: Check suppression ownership and expiry
         run: python scripts/check_exception_expiry.py security juice-shop
       - name: Test custom rules
-        run: |
-          python - <<'PY'
-          import subprocess
-
-          result = subprocess.run(
-              ['semgrep', 'scan', '--test', '--config', 'security/semgrep/rules.yml', 'security/semgrep/tests'],
-              stdout=subprocess.PIPE,
-              stderr=subprocess.STDOUT,
-              text=True,
-          )
-          print(result.stdout)
-          if result.returncode:
-              details = result.stdout[-6000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-              print(f'::error title=Custom rule tests failed::{details}')
-              raise SystemExit(result.returncode)
-          PY
+        run: python scripts/test_semgrep_rules.py
       - name: Verify documented false-positive suppression
         run: semgrep scan --config security/semgrep/rules.yml --metrics=off --error security/semgrep/examples/false-positive.ts
       - name: Scan Juice Shop
@@ -121,7 +106,6 @@ jobs:
             docker.io/zricethezav/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f \
             dir . \
             --config .gitleaks.toml \
-            --baseline-path security/gitleaks-baseline.json \
             --report-format json \
             --report-path security-reports/gitleaks.json \
             --redact \
