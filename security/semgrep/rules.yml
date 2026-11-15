@@ -1,0 +1,35 @@
+rules:
+  - id: acme.javascript.express.permissive-cors
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Unrestricted CORS middleware allows any website to make cross-origin requests.
+      Configure an explicit origin allowlist instead.
+    metadata:
+      category: security
+      technology: [express, cors]
+      severity: HIGH
+      confidence: HIGH
+      references:
+        - https://owasp.org/www-community/attacks/CORS_OriginHeaderScrutiny
+    pattern-either:
+      - pattern: $APP.use(cors())
+      - pattern: $APP.options('*', cors())
+      - pattern: "$APP.use(cors({ ..., origin: true, ... }))"
+      - pattern: "$APP.use(cors({ ..., origin: '*', ... }))"
+
+  - id: acme.javascript.sequelize.unsafe-template-query
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      A template literal is passed to a raw Sequelize query. Interpolated values can
+      change the SQL statement; use bind parameters or replacements instead.
+    metadata:
+      category: security
+      technology: [sequelize]
+      severity: HIGH
+      confidence: HIGH
+      cwe: "CWE-89: Improper Neutralization of Special Elements used in an SQL Command"
+      references:
+        - https://sequelize.org/docs/v6/core-concepts/raw-queries/#bind-parameter
+    pattern: $DB.query(`...${$VALUE}...`, ...)

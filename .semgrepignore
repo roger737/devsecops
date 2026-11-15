@@ -1,0 +1,10 @@
+.git/
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+juice-shop/data/static/codefixes/
+juice-shop/data/static/codesnippets/
+juice-shop/test/
+security/semgrep/tests/
+security/semgrep/examples/

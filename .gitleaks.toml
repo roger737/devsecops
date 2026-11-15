@@ -1,0 +1,13 @@
+title = "Acme delivery repository secret policy"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "OWASP Juice Shop intentionally embeds this training key in three challenge files; suppress only the private-key rule on those exact paths."
+targetRules = ["private-key"]
+paths = [
+  '''(?:^|/)juice-shop/lib/insecurity\.ts$''',
+  '''(?:^|/)juice-shop/terraform/networking\.tf$''',
+  '''(?:^|/)juice-shop/infrastructure/terraform/networking\.tf$''',
+]

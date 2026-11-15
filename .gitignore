@@ -1,0 +1,7 @@
+security-reports/
+presentation/presentation-text.txt
+presentation/rendered/
+scripts/.venv/
+__pycache__/
+*.pyc
+.DS_Store
