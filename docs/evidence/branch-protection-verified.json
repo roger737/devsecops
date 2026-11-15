@@ -1,0 +1,35 @@
+{
+  "repository": "roger737/devsecops",
+  "branch": "main",
+  "verification_method": "Authenticated GitHub Settings readback and pull-request merge-control observation",
+  "verified_at": "2026-11-15T14:16:51+05:30",
+  "settings_url": "https://github.com/roger737/devsecops/settings/branch_protection_rules/86367151",
+  "pull_request_url": "https://github.com/roger737/devsecops/pull/1",
+  "required_status_checks": {
+    "strict": true,
+    "contexts": [
+      "verify"
+    ]
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": true,
+    "required_approving_review_count": 1,
+    "require_last_push_approval": true
+  },
+  "required_linear_history": true,
+  "required_conversation_resolution": true,
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "observed_merge_blockers": [
+    "At least 1 approving review is required by reviewers with write access",
+    "Security gates / verify (pull_request) is required and failed",
+    "New changes require approval from someone other than the last pusher"
+  ],
+  "screenshots": [
+    "branch-protection-checks.png",
+    "branch-protection-controls.png",
+    "branch-protection-pr.png"
+  ]
+}
