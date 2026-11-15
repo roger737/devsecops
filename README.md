@@ -59,8 +59,8 @@ A vulnerable target means a failing gate is a valid demonstration. Do not add ge
 ### Checkout
 
 ```bash
-git clone --recurse-submodules YOUR_REPOSITORY_URL
-cd acme-devsecops
+git clone --recurse-submodules https://github.com/roger737/devsecops.git
+cd devsecops
 git submodule status
 ```
 
@@ -109,10 +109,10 @@ Follow `docs/demo-runbook.md`. Use only the supplied synthetic-credential proced
 
 ### Branch protection
 
-After replacing `@REPOSITORY_OWNER` with the owner's handle and authenticating GitHub CLI as a repository administrator:
+Authenticate GitHub CLI as a repository administrator, then apply and verify the rules:
 
 ```bash
-bash scripts/configure_branch_protection.sh OWNER/REPOSITORY
+bash scripts/configure_branch_protection.sh roger737/devsecops
 ```
 
 The script applies and reads back the settings. It does not store a token. Free private repositories may not support every branch-protection feature; use a public repository or an eligible plan.
